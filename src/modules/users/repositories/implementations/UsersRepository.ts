@@ -14,10 +14,14 @@ export class UsersRepository implements IUsersRepository {
   async findUserWithGamesById({
     user_id,
   }: IFindUserWithGamesDTO): Promise<User> {
-    return this.repository.createQueryBuilder('users')
-    .leftJoinAndSelect('user.games', 'game')
-    .where('user.id = :id', { id: user_id })
-    .getOneOrFail(); // Complete usando ORM
+    const user = await this.repository.findOneOrFail({
+      relations: ['games'],
+      where: {
+        id: user_id
+    }
+    });
+
+    return user;
   }
 
   async findAllUsersOrderedByFirstName(): Promise<User[]> {
